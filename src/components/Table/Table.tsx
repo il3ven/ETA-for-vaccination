@@ -1,13 +1,15 @@
-import Header from "./Header";
-import { Row } from "../../interfaces/Row";
+import Row from "./Header";
+import { IRow } from "../../interfaces/Row";
+import { StyledTable } from "./styles";
 
-const Table = ({ rows }: { rows: Array<Row> }) => {
+const Table = ({ heading, rows }: { heading: IRow; rows: Array<IRow> }) => {
   return (
-    <div>
+    <StyledTable cols={heading.length.toString()}>
+      <Row row={heading} header />
       {rows.map((row) => (
-        <Header row={row} />
+        <Row row={row} />
       ))}
-    </div>
+    </StyledTable>
   );
 };
 

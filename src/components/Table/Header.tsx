@@ -1,13 +1,15 @@
-import { Row } from "../../interfaces/Row";
+import { IRow } from "../../interfaces/Row";
+import Cell from "./Cell";
+import { StyledRow } from "./styles";
 
-const Header = ({ row }: { row: Row }) => {
+const Row = ({ row, header }: { row: IRow; header?: Boolean }) => {
   return (
-    <div>
-      {row.map((cell) => (
-        <div>{cell}</div>
-      ))}
-    </div>
+    <StyledRow header={header}>
+      {row.map((cell, index) =>
+        index === 0 ? <Cell text={cell} firstChild /> : <Cell text={cell} />
+      )}
+    </StyledRow>
   );
 };
 
-export default Header;
+export default Row;

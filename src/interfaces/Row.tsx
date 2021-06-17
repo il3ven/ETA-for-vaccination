@@ -1,1 +1,1 @@
-export interface Row extends Array<string> {}
+export interface IRow extends Array<string> {}
