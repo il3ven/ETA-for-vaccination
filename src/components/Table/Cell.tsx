@@ -1,6 +1,6 @@
 import { StyledCell } from "./styles";
 
-const Cell = ({ text }: { text: string; firstChild?: Boolean }) => {
+const Cell = ({ text, firstChild }: { text: string; firstChild?: Boolean }) => {
   return <StyledCell firstChild={firstChild}>{text}</StyledCell>;
 };
 

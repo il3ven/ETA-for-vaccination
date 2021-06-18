@@ -1,4 +1,4 @@
-import Row from "./Header";
+import Row from "./Row";
 import { IRow } from "../../interfaces/Row";
 import { StyledTable } from "./styles";
 
