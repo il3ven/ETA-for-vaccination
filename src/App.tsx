@@ -96,11 +96,13 @@ const getPercentVaccinated = (vaccinated: string, population: string) => {
 };
 
 function App() {
+  const [rawData, setRawData] = useState<any>();
   const [resp, setResp] = useState();
   const [rows, setRows] = useState<IRow[]>([[]]);
   const [loading, setLoading] = useState<Boolean>(false);
-  const [target, setTarget] = useState<string>("2023-01-01"); // Date string in YYYY-MM-DD
-  const { state } = useParams();
+  const [target, setTarget] = useState<string>("2022-06-01"); // Date string in YYYY-MM-DD
+  let { code } = useParams<{ code: string }>();
+  console.log(code);
 
   const getRow = useCallback(
     (resp: any = {}, code: string): IRow => {
@@ -169,7 +171,7 @@ function App() {
         )
       ).data;
 
-      setResp(resp);
+      setRawData(resp);
       setLoading(false);
     };
 
@@ -177,19 +179,29 @@ function App() {
   }, []);
 
   useEffect(() => {
+    setResp(code ? rawData?.[code]?.districts : rawData);
+  }, [code, rawData]);
+
+  useEffect(() => {
     setLoading(true);
-    const _rows = [
-      getRow(resp, "TT"),
-      ...Object.keys(resp || {})
-        .filter((code) => code !== "TT")
-        .map((code: string): IRow => {
-          return getRow(resp, code);
-        }),
-    ];
+    const _rows = code
+      ? Object.keys(resp || {})
+          .filter((code) => code !== "TT")
+          .map((code: string): IRow => {
+            return getRow(resp, code);
+          })
+      : [
+          getRow(resp, "TT"),
+          ...Object.keys(resp || {})
+            .filter((code) => code !== "TT")
+            .map((code: string): IRow => {
+              return getRow(resp, code);
+            }),
+        ];
 
     setRows(_rows);
     setLoading(false);
-  }, [resp, getRow]);
+  }, [resp, getRow, code]);
 
   const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
     setTarget(e.target.value);
@@ -256,7 +268,12 @@ function App() {
         <Loading />
       ) : (
         <TableWrapper>
-          <Table heading={headings} rows={rows} handleSort={handleSort} />
+          <Table
+            heading={headings}
+            rows={rows}
+            handleSort={handleSort}
+            allowClick={!code}
+          />
         </TableWrapper>
       )}
     </div>

@@ -7,10 +7,12 @@ const Row = ({
   row,
   header,
   handleSort,
+  onClick,
 }: {
   row: IRow;
   header?: Boolean;
   handleSort?: (heading: string, sort: ISort) => void;
+  onClick?: (code: string) => void;
 }) => {
   const [sort, setSort] = useState<ISort>();
   const [sortIndex, setSortIndex] = useState<Number | undefined>();
@@ -26,8 +28,16 @@ const Row = ({
     }
   };
 
+  console.log(!!onClick);
+
   return (
-    <StyledRow header={header}>
+    <StyledRow
+      header={header}
+      onClick={() => {
+        onClick?.(row[0].value);
+      }}
+      showCursor={!!onClick}
+    >
       {row.map((cell, index) => {
         const props = {
           data: cell,

@@ -46,10 +46,12 @@ export const StyledCell = styled.div<{
   }
 `;
 
-export const StyledRow = styled.div<{ header?: Boolean }>`
+export const StyledRow = styled.div<{ header?: Boolean; showCursor: Boolean }>`
   display: contents;
 
   ${StyledCell} {
+    ${(props) => props.showCursor && "cursor: pointer;"}
+
     ${(props) =>
       props.header &&
       `
