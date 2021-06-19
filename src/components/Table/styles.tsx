@@ -7,25 +7,33 @@ export const StyledTable = styled.div<{ cols: string }>`
   /* gap: 0.2rem; */
 `;
 
+export const StyledIconDiv = styled.div`
+  position: absolute;
+  right: 0;
+  top: 10%;
+  color: #4a4e60;
+`;
+
 export const StyledCell = styled.div<{
   firstChild?: Boolean;
   textColor?: string;
 }>`
-  /* background-color: #ebebeb; */
   padding: 0.5rem;
-  /* border-radius: 0.2rem; */
+  padding-left: 0.4rem;
+  padding-right: 0.7rem;
   transition: color 0.3s ease-in-out;
   color: ${({ textColor }) => textColor || "#5b5c68"};
   font-size: 11pt;
+  position: relative;
 
   &:first-child {
     position: sticky;
     left: 0;
     color: #000000;
     background-color: #fff;
+    z-index: 3;
 
     @media (max-width: 540px) {
-      /* box-shadow: 3px 0 10px #2b2b2b28; */
       border-right: 1px solid #97979729;
     }
   }
@@ -42,6 +50,7 @@ export const StyledRow = styled.div<{ header?: Boolean }>`
       color: #787a8a;
       display: flex;
       align-items: center;
+      cursor: pointer;
     `}
   }
 `;

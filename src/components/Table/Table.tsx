@@ -1,5 +1,5 @@
 import Row from "./Row";
-import { IRow } from "../../interfaces/Row";
+import { IRow, ISort } from "../../interfaces/Row";
 import { StyledTable } from "./styles";
 
 const Table = ({
@@ -9,13 +9,13 @@ const Table = ({
 }: {
   heading: IRow;
   rows: Array<IRow>;
-  handleSort: (index: number) => void;
+  handleSort: (heading: string, sort: ISort) => void;
 }) => {
   return (
     <StyledTable cols={heading.length.toString()}>
-      <Row row={heading} header />
-      {rows.map((row) => (
-        <Row row={row} />
+      <Row row={heading} header handleSort={handleSort} />
+      {rows.map((row, index) => (
+        <Row row={row} key={index} />
       ))}
     </StyledTable>
   );

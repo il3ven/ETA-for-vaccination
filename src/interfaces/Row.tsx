@@ -1,1 +1,8 @@
-export interface IRow extends Array<{ color?: string; text: string }> {}
+export type ISort = "asc" | "desc" | undefined;
+export interface ICell {
+  text: string;
+  value: string;
+  color?: string;
+}
+
+export interface IRow extends Array<ICell> {}

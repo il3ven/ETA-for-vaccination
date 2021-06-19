@@ -1,4 +1,4 @@
-import { IRow } from "./interfaces/Row";
+import { IRow, ISort } from "./interfaces/Row";
 import Table from "./components/Table/Table";
 import axios from "axios";
 import { ChangeEvent, useEffect } from "react";
@@ -10,13 +10,13 @@ import { convertToIndiaUnit } from "./utils/convertToIndianUnit";
 import moment from "moment";
 import { useCallback } from "react";
 
-const heading = [
-  { text: "State" },
-  { text: "ETA for everyone to get vaccinated" },
-  { text: "ETA for 70% to get vaccinated" },
-  { text: "Vaccines administered per day" },
-  { text: "Percentage of Population Vaccinated with Dose 1" },
-  { text: "Percentage of Population Vaccinated with Dose 2" },
+const headings = [
+  { text: "State", value: "1" },
+  { text: "ETA for everyone to get vaccinated", value: "2" },
+  { text: "ETA for 70% to get vaccinated", value: "3" },
+  { text: "Vaccines administered per day", value: "4" },
+  { text: "Percentage of Population Vaccinated with Dose 1", value: "5" },
+  { text: "Percentage of Population Vaccinated with Dose 2", value: "6" },
 ];
 // const rows: IRow[] = [["Delhi", "50%"]];
 
@@ -53,20 +53,36 @@ const getETA = (
   else if (months > 0) text = `${months} ${months > 1 ? "months" : "month"}`;
   else if (days > 0) text = `${days} ${days > 1 ? "days" : "day"}`;
 
-  return { text, days: (parseInt(population) * 2) / perDay };
+  return { text, days: Math.round((parseInt(population) * 2) / perDay) };
 };
 
 const getAverageSpeed = (vaccinated1: string, vaccinated2: string) => {
-  return convertToIndiaUnit(
-    Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7)
-  );
+  return {
+    text: convertToIndiaUnit(
+      Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7)
+    ),
+    value: Math.round(
+      (Number(vaccinated1) + Number(vaccinated2)) / 7
+    ).toString(),
+  };
+};
+
+const getPercentVaccinated = (vaccinated: string, population: string) => {
+  return {
+    text: `${convertToIndiaUnit(
+      Math.round((Number(vaccinated) / Number(population)) * 100)
+    )}%`,
+    value: Math.round(
+      (Number(vaccinated) / Number(population)) * 100
+    ).toString(),
+  };
 };
 
 function App() {
   const [resp, setResp] = useState();
   const [rows, setRows] = useState<IRow[]>([[]]);
   const [loading, setLoading] = useState<Boolean>(false);
-  const [target, setTarget] = useState<string>("2022-01-01"); // Date string in YYYY-MM-DD
+  const [target, setTarget] = useState<string>("2023-01-01"); // Date string in YYYY-MM-DD
 
   const getRow = useCallback(
     (resp: any = {}, stateCode: string): IRow => {
@@ -83,46 +99,42 @@ function App() {
       );
 
       return [
-        { text: STATE_NAMES[stateCode] },
+        { text: STATE_NAMES[stateCode], value: stateCode },
         {
           text: eta100.text,
+          value: eta100.days.toString(),
           color: `${
             eta100.days - moment(target).diff(moment(), "days") > 0
               ? "#ea3b3b"
-              : "#4848e8"
+              : "#1b8e1d"
           }`,
         },
         {
           text: eta70.text,
+          value: eta70.days.toString(),
           color: `${
             eta70.days - moment(target).diff(moment(), "days") > 0
               ? "#ea3b3b"
-              : "#4848e8"
+              : "#1b8e1d"
           }`,
         },
         {
-          text: getAverageSpeed(
+          ...getAverageSpeed(
             resp[stateCode]?.delta7?.vaccinated1,
             resp[stateCode]?.delta7?.vaccinated2
           ),
         },
         {
-          text: `${convertToIndiaUnit(
-            Math.round(
-              (resp[stateCode]?.total.vaccinated1 /
-                resp[stateCode]?.meta?.population) *
-                100
-            )
-          )}%`,
+          ...getPercentVaccinated(
+            resp[stateCode]?.total?.vaccinated1,
+            resp[stateCode]?.meta?.population
+          ),
         },
         {
-          text: `${convertToIndiaUnit(
-            Math.round(
-              (resp[stateCode]?.total.vaccinated2 /
-                resp[stateCode]?.meta?.population) *
-                100
-            )
-          )}%`,
+          ...getPercentVaccinated(
+            resp[stateCode]?.total?.vaccinated2,
+            resp[stateCode]?.meta?.population
+          ),
         },
       ];
     },
@@ -163,7 +175,37 @@ function App() {
     setTarget(e.target.value);
   };
 
-  const handleSort = (index: number) => {};
+  const handleSort = (heading: string, sort: ISort) => {
+    let index = -1;
+
+    for (let i = 0; i < headings.length; i++) {
+      if (headings[i].text === heading) {
+        index = i;
+        break;
+      }
+    }
+
+    const [firstRow, ...oldRows] = rows;
+
+    oldRows.sort((row1, row2) => {
+      const value1 = row1[index].value;
+      const value2 = row2[index].value;
+
+      if (parseInt(value1) && parseInt(value2)) {
+        /*prettier-ignore */
+        return sort === "asc"
+          ? parseInt(value1) > parseInt(value2) ? 1 : 0
+          : parseInt(value2) > parseInt(value1) ? 1 : 0;
+      }
+
+      /*prettier-ignore */
+      return sort === "asc"
+        ? (row1[index].value > row2[index].value ? 1 : 0)
+        : (row2[index].value > row1[index].value ? 1 : 0)
+    });
+
+    setRows([firstRow, ...oldRows]);
+  };
 
   return (
     <div className="App">
@@ -172,7 +214,7 @@ function App() {
         <Loading />
       ) : (
         <TableWrapper>
-          <Table heading={heading} rows={rows} handleSort={handleSort} />
+          <Table heading={headings} rows={rows} handleSort={handleSort} />
         </TableWrapper>
       )}
     </div>
