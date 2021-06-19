@@ -34,6 +34,12 @@ const getETA = (
   vaccinated2: string,
   population: string
 ) => {
+  if (!vaccinated1 || !vaccinated2 || !population)
+    return {
+      text: "-",
+      days: 0,
+    };
+
   const perDay = Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7);
   const targetDate = moment().add(
     (parseInt(population) * 2) / perDay, // days remaining
@@ -67,22 +73,24 @@ const getETA = (
 
 const getAverageSpeed = (vaccinated1: string, vaccinated2: string) => {
   return {
-    text: convertToIndiaUnit(
-      Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7)
-    ),
-    value: Math.round(
-      (Number(vaccinated1) + Number(vaccinated2)) / 7
+    text:
+      convertToIndiaUnit(
+        Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7)
+      ) || "-",
+    value: (
+      Math.round((Number(vaccinated1) + Number(vaccinated2)) / 7) || 0
     ).toString(),
   };
 };
 
 const getPercentVaccinated = (vaccinated: string, population: string) => {
+  const percentVaccinated = convertToIndiaUnit(
+    Math.round((Number(vaccinated) / Number(population)) * 100)
+  );
   return {
-    text: `${convertToIndiaUnit(
-      Math.round((Number(vaccinated) / Number(population)) * 100)
-    )}%`,
-    value: Math.round(
-      (Number(vaccinated) / Number(population)) * 100
+    text: `${percentVaccinated ? percentVaccinated + "%" : "-"}`,
+    value: (
+      Math.round((Number(vaccinated) / Number(population)) * 100) || "0"
     ).toString(),
   };
 };
@@ -108,7 +116,7 @@ function App() {
       );
 
       return [
-        { text: STATE_NAMES[stateCode], value: stateCode },
+        { text: STATE_NAMES[stateCode] || stateCode, value: stateCode },
         {
           text: eta100.text,
           value: eta100.days.toString(),
@@ -160,14 +168,15 @@ function App() {
         )
       ).data;
 
-      setLoading(false);
       setResp(resp);
+      setLoading(false);
     };
 
     fn();
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     const _rows = [
       getRow(resp, "TT"),
       ...Object.keys(resp || {})
@@ -178,6 +187,7 @@ function App() {
     ];
 
     setRows(_rows);
+    setLoading(false);
   }, [resp, getRow]);
 
   const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
@@ -240,6 +250,7 @@ function App() {
           </LegendWrapper>
         </P>
       </Header>
+
       {loading ? (
         <Loading />
       ) : (

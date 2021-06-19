@@ -26,7 +26,7 @@ export const H1 = styled.h1`
   }
 `;
 
-export const P = styled.p`
+export const P = styled.div`
   max-width: 700px;
 `;
 

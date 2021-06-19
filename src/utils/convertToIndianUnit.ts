@@ -9,6 +9,7 @@ const formatNumToString = (num: number, base: number, suffix: string) => {
 };
 
 export const convertToIndiaUnit = (num: number) => {
+  if (isNaN(num)) return undefined;
   if (num >= 1000000000) return "Infinity";
   if (num / 10000000 > 1) return formatNumToString(num, 10000000, "Cr");
   if (num / 100000 > 1) return formatNumToString(num, 100000, "Lakh");
