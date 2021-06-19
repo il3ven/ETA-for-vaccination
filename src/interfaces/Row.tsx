@@ -1,1 +1,1 @@
-export interface IRow extends Array<string> {}
+export interface IRow extends Array<{ color?: string; text: string }> {}

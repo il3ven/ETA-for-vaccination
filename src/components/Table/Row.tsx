@@ -6,7 +6,7 @@ const Row = ({ row, header }: { row: IRow; header?: Boolean }) => {
   return (
     <StyledRow header={header}>
       {row.map((cell, index) =>
-        index === 0 ? <Cell text={cell} firstChild /> : <Cell text={cell} />
+        index === 0 ? <Cell data={cell} firstChild /> : <Cell data={cell} />
       )}
     </StyledRow>
   );

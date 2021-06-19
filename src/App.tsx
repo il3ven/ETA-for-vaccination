@@ -8,13 +8,15 @@ import { TableWrapper } from "./styles";
 import { Loading } from "./components/Loading";
 import { convertToIndiaUnit } from "./utils/convertToIndianUnit";
 import moment from "moment";
+import { useCallback } from "react";
 
 const heading = [
-  "State",
-  "ETA",
-  "Vaccines administered per day",
-  "Percentage of Population Vaccinated with Dose 1",
-  "Percentage of Population Vaccinated with Dose 2",
+  { text: "State" },
+  { text: "ETA for everyone to get vaccinated" },
+  { text: "ETA for 70% to get vaccinated" },
+  { text: "Vaccines administered per day" },
+  { text: "Percentage of Population Vaccinated with Dose 1" },
+  { text: "Percentage of Population Vaccinated with Dose 2" },
 ];
 // const rows: IRow[] = [["Delhi", "50%"]];
 
@@ -37,21 +39,21 @@ const getETA = (
   now.add(months, "months");
   const days = targetDate.diff(now, "days");
 
+  let text = moment().to(targetDate);
+
   if (years > 0 && months > 0)
-    return `${years} ${years > 1 ? "years" : "year"} and ${
+    text = `${years} ${years > 1 ? "years" : "year"} and ${
       months > 1 ? `${months} months` : `a month`
     }`;
-
-  if (months > 0 && days > 0)
-    return `${months} ${months > 1 ? "months" : "month"} and ${
+  else if (months > 0 && days > 0)
+    text = `${months} ${months > 1 ? "months" : "month"} and ${
       days > 1 ? `${days} days` : `a day`
     }`;
+  else if (years > 0) text = `${years} ${years > 1 ? "years" : "year"}`;
+  else if (months > 0) text = `${months} ${months > 1 ? "months" : "month"}`;
+  else if (days > 0) text = `${days} ${days > 1 ? "days" : "day"}`;
 
-  if (years > 0) return `${years} ${years > 1 ? "years" : "year"}`;
-  if (months > 0) return `${months} ${months > 1 ? "months" : "month"}`;
-  if (days > 0) return `${days} ${days > 1 ? "days" : "day"}`;
-
-  return moment().to(targetDate);
+  return { text, days: (parseInt(population) * 2) / perDay };
 };
 
 const getAverageSpeed = (vaccinated1: string, vaccinated2: string) => {
@@ -60,39 +62,72 @@ const getAverageSpeed = (vaccinated1: string, vaccinated2: string) => {
   );
 };
 
-const getRow = (resp: any, stateCode: string): IRow => {
-  return [
-    STATE_NAMES[stateCode],
-    getETA(
-      resp[stateCode]?.delta7?.vaccinated1,
-      resp[stateCode]?.delta7?.vaccinated2,
-      resp[stateCode]?.meta?.population
-    ),
-    getAverageSpeed(
-      resp[stateCode]?.delta7?.vaccinated1,
-      resp[stateCode]?.delta7?.vaccinated2
-    ),
-    `${convertToIndiaUnit(
-      Math.round(
-        (resp[stateCode]?.total.vaccinated1 /
-          resp[stateCode]?.meta?.population) *
-          100
-      )
-    )}%`,
-    `${convertToIndiaUnit(
-      Math.round(
-        (resp[stateCode]?.total.vaccinated2 /
-          resp[stateCode]?.meta?.population) *
-          100
-      )
-    )}%`,
-  ];
-};
-
 function App() {
+  const [resp, setResp] = useState();
   const [rows, setRows] = useState<IRow[]>([[]]);
   const [loading, setLoading] = useState<Boolean>(false);
   const [target, setTarget] = useState<string>("2022-01-01"); // Date string in YYYY-MM-DD
+
+  const getRow = useCallback(
+    (resp: any = {}, stateCode: string): IRow => {
+      const eta100 = getETA(
+        resp[stateCode]?.delta7?.vaccinated1,
+        resp[stateCode]?.delta7?.vaccinated2,
+        resp[stateCode]?.meta?.population
+      );
+
+      const eta70 = getETA(
+        resp[stateCode]?.delta7?.vaccinated1,
+        resp[stateCode]?.delta7?.vaccinated2,
+        (0.7 * parseInt(resp[stateCode]?.meta?.population)).toString()
+      );
+
+      return [
+        { text: STATE_NAMES[stateCode] },
+        {
+          text: eta100.text,
+          color: `${
+            eta100.days - moment(target).diff(moment(), "days") > 0
+              ? "#ea3b3b"
+              : "#4848e8"
+          }`,
+        },
+        {
+          text: eta70.text,
+          color: `${
+            eta70.days - moment(target).diff(moment(), "days") > 0
+              ? "#ea3b3b"
+              : "#4848e8"
+          }`,
+        },
+        {
+          text: getAverageSpeed(
+            resp[stateCode]?.delta7?.vaccinated1,
+            resp[stateCode]?.delta7?.vaccinated2
+          ),
+        },
+        {
+          text: `${convertToIndiaUnit(
+            Math.round(
+              (resp[stateCode]?.total.vaccinated1 /
+                resp[stateCode]?.meta?.population) *
+                100
+            )
+          )}%`,
+        },
+        {
+          text: `${convertToIndiaUnit(
+            Math.round(
+              (resp[stateCode]?.total.vaccinated2 /
+                resp[stateCode]?.meta?.population) *
+                100
+            )
+          )}%`,
+        },
+      ];
+    },
+    [target]
+  );
 
   useEffect(() => {
     const fn = async () => {
@@ -104,26 +139,31 @@ function App() {
         )
       ).data;
 
-      const _rows = [
-        getRow(resp, "TT"),
-        ...Object.keys(resp)
-          .filter((stateCode) => stateCode !== "TT")
-          .map((stateCode: string): IRow => {
-            return getRow(resp, stateCode);
-          }),
-      ];
-      console.log(_rows);
-
       setLoading(false);
-      setRows(_rows);
+      setResp(resp);
     };
 
     fn();
   }, []);
 
+  useEffect(() => {
+    const _rows = [
+      getRow(resp, "TT"),
+      ...Object.keys(resp || {})
+        .filter((stateCode) => stateCode !== "TT")
+        .map((stateCode: string): IRow => {
+          return getRow(resp, stateCode);
+        }),
+    ];
+
+    setRows(_rows);
+  }, [resp, getRow]);
+
   const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
     setTarget(e.target.value);
   };
+
+  const handleSort = (index: number) => {};
 
   return (
     <div className="App">
@@ -132,7 +172,7 @@ function App() {
         <Loading />
       ) : (
         <TableWrapper>
-          <Table heading={heading} rows={rows} />
+          <Table heading={heading} rows={rows} handleSort={handleSort} />
         </TableWrapper>
       )}
     </div>

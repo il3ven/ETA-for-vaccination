@@ -1,7 +1,17 @@
 import { StyledCell } from "./styles";
 
-const Cell = ({ text, firstChild }: { text: string; firstChild?: Boolean }) => {
-  return <StyledCell firstChild={firstChild}>{text}</StyledCell>;
+const Cell = ({
+  data,
+  firstChild,
+}: {
+  data: { text: string; color?: string };
+  firstChild?: Boolean;
+}) => {
+  return (
+    <StyledCell firstChild={firstChild} textColor={data.color}>
+      {data.text}
+    </StyledCell>
+  );
 };
 
 export default Cell;

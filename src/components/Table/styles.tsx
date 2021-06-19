@@ -7,12 +7,15 @@ export const StyledTable = styled.div<{ cols: string }>`
   /* gap: 0.2rem; */
 `;
 
-export const StyledCell = styled.div<{ firstChild?: Boolean }>`
+export const StyledCell = styled.div<{
+  firstChild?: Boolean;
+  textColor?: string;
+}>`
   /* background-color: #ebebeb; */
   padding: 0.5rem;
   /* border-radius: 0.2rem; */
-  /* transition: border-right 0.5s ease-in-out; */
-  color: #5b5c68;
+  transition: color 0.3s ease-in-out;
+  color: ${({ textColor }) => textColor || "#5b5c68"};
   font-size: 11pt;
 
   &:first-child {
@@ -25,10 +28,6 @@ export const StyledCell = styled.div<{ firstChild?: Boolean }>`
       /* box-shadow: 3px 0 10px #2b2b2b28; */
       border-right: 1px solid #97979729;
     }
-  }
-
-  &:nth-child(2) {
-    color: red;
   }
 `;
 
