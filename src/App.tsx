@@ -1,13 +1,13 @@
 import { IRow, ISort } from "./interfaces/Row";
 import Table from "./components/Table/Table";
 import axios from "axios";
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useCallback } from "react";
 import { useState } from "react";
 import { STATE_NAMES } from "./constant";
 import { Loading } from "./components/Loading";
 import { convertToIndiaUnit } from "./utils/convertToIndianUnit";
 import moment from "moment";
-import { useCallback } from "react";
+import { useParams } from "react-router-dom";
 import {
   TableWrapper,
   H1,
@@ -100,23 +100,24 @@ function App() {
   const [rows, setRows] = useState<IRow[]>([[]]);
   const [loading, setLoading] = useState<Boolean>(false);
   const [target, setTarget] = useState<string>("2023-01-01"); // Date string in YYYY-MM-DD
+  const { state } = useParams();
 
   const getRow = useCallback(
-    (resp: any = {}, stateCode: string): IRow => {
+    (resp: any = {}, code: string): IRow => {
       const eta100 = getETA(
-        resp[stateCode]?.delta7?.vaccinated1,
-        resp[stateCode]?.delta7?.vaccinated2,
-        resp[stateCode]?.meta?.population
+        resp[code]?.delta7?.vaccinated1,
+        resp[code]?.delta7?.vaccinated2,
+        resp[code]?.meta?.population
       );
 
       const eta70 = getETA(
-        resp[stateCode]?.delta7?.vaccinated1,
-        resp[stateCode]?.delta7?.vaccinated2,
-        (0.7 * parseInt(resp[stateCode]?.meta?.population)).toString()
+        resp[code]?.delta7?.vaccinated1,
+        resp[code]?.delta7?.vaccinated2,
+        (0.7 * parseInt(resp[code]?.meta?.population)).toString()
       );
 
       return [
-        { text: STATE_NAMES[stateCode] || stateCode, value: stateCode },
+        { text: STATE_NAMES[code] || code, value: code },
         {
           text: eta100.text,
           value: eta100.days.toString(),
@@ -137,20 +138,20 @@ function App() {
         },
         {
           ...getAverageSpeed(
-            resp[stateCode]?.delta7?.vaccinated1,
-            resp[stateCode]?.delta7?.vaccinated2
+            resp[code]?.delta7?.vaccinated1,
+            resp[code]?.delta7?.vaccinated2
           ),
         },
         {
           ...getPercentVaccinated(
-            resp[stateCode]?.total?.vaccinated1,
-            resp[stateCode]?.meta?.population
+            resp[code]?.total?.vaccinated1,
+            resp[code]?.meta?.population
           ),
         },
         {
           ...getPercentVaccinated(
-            resp[stateCode]?.total?.vaccinated2,
-            resp[stateCode]?.meta?.population
+            resp[code]?.total?.vaccinated2,
+            resp[code]?.meta?.population
           ),
         },
       ];
@@ -180,9 +181,9 @@ function App() {
     const _rows = [
       getRow(resp, "TT"),
       ...Object.keys(resp || {})
-        .filter((stateCode) => stateCode !== "TT")
-        .map((stateCode: string): IRow => {
-          return getRow(resp, stateCode);
+        .filter((code) => code !== "TT")
+        .map((code: string): IRow => {
+          return getRow(resp, code);
         }),
     ];
 
