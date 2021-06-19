@@ -19,8 +19,9 @@ const Row = ({
 
   const handleClick = (text: string, index: number) => {
     if (handleSort) {
-      handleSort(text, sort);
-      setSort(index === sortIndex ? flipSort(sort) : "asc");
+      const newSort = index === sortIndex ? flipSort(sort) : "asc";
+      handleSort(text, newSort);
+      setSort(newSort);
       setSortIndex(index);
     }
   };

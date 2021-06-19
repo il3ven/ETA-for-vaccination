@@ -35,7 +35,7 @@ export const StyledCell = styled.div<{
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 
-    @media (max-width: 540px) {
+    @media (max-width: 600px) {
       border-right: 1px solid #97979729;
     }
   }
