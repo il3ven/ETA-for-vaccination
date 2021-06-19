@@ -1,4 +1,4 @@
-import { useState, MouseEventHandler, createElement } from "react";
+import { useState } from "react";
 import { IRow, ISort } from "../../interfaces/Row";
 import Cell from "./Cell";
 import { StyledRow } from "./styles";
@@ -30,7 +30,6 @@ const Row = ({
       {row.map((cell, index) => {
         const props = {
           data: cell,
-          header: header,
           key: index,
           onClick: (text: string) => handleClick(text, index),
           ...(index === 0 && { firstChild: true }),
