@@ -4,16 +4,25 @@ import axios from "axios";
 import { ChangeEvent, useEffect } from "react";
 import { useState } from "react";
 import { STATE_NAMES } from "./constant";
-import { TableWrapper } from "./styles";
 import { Loading } from "./components/Loading";
 import { convertToIndiaUnit } from "./utils/convertToIndianUnit";
 import moment from "moment";
 import { useCallback } from "react";
+import {
+  TableWrapper,
+  H1,
+  P,
+  Legend,
+  Circle,
+  Header,
+  LegendWrapper,
+  DateWrapper,
+} from "./styles";
 
 const headings = [
   { text: "State", value: "1" },
   { text: "ETA for everyone to get vaccinated", value: "2" },
-  { text: "ETA for 70% to get vaccinated", value: "3" },
+  { text: "ETA for 70% people to get vaccinated", value: "3" },
   { text: "Vaccines administered per day", value: "4" },
   { text: "Percentage of Population Vaccinated with Dose 1", value: "5" },
   { text: "Percentage of Population Vaccinated with Dose 2", value: "6" },
@@ -209,7 +218,28 @@ function App() {
 
   return (
     <div className="App">
-      <input type="date" value={target} onChange={handleDate} />
+      <Header>
+        <H1>Will we be able to acheive our vaccination targets?</H1>
+        <P>
+          <DateWrapper>
+            <span>Select the target date: </span>
+            <input type="date" value={target} onChange={handleDate} />
+          </DateWrapper>
+          <LegendWrapper>
+            <Legend>
+              <Circle circleColor="#ea3b3b" />
+              <span className="text">
+                Not possible to fully vaccinate people before the selected
+                target
+              </span>
+            </Legend>
+            <Legend>
+              <Circle circleColor="#1b8e1d" />
+              <span className="text">Will be able to meet target</span>
+            </Legend>
+          </LegendWrapper>
+        </P>
+      </Header>
       {loading ? (
         <Loading />
       ) : (

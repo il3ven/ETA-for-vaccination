@@ -32,10 +32,17 @@ export const StyledCell = styled.div<{
     color: #000000;
     background-color: #fff;
     z-index: 3;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 
     @media (max-width: 540px) {
       border-right: 1px solid #97979729;
     }
+  }
+
+  &:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
 `;
 
@@ -51,6 +58,10 @@ export const StyledRow = styled.div<{ header?: Boolean }>`
       display: flex;
       align-items: center;
       cursor: pointer;
+
+      &:hover {
+        background-color: #f4f4f4;
+      }
     `}
   }
 `;
