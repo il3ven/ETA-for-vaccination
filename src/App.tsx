@@ -220,7 +220,14 @@ function App() {
       }
     }
 
-    const [firstRow, ...oldRows] = rows;
+    let firstRow: IRow | undefined = undefined,
+      oldRows: IRow[];
+
+    if (code) {
+      [...oldRows] = rows;
+    } else {
+      [firstRow, ...oldRows] = rows;
+    }
 
     oldRows.sort((row1, row2) => {
       const value1 = row1[index].value;
@@ -239,7 +246,7 @@ function App() {
         : (row2[index].value > row1[index].value ? 1 : 0)
     });
 
-    setRows([firstRow, ...oldRows]);
+    firstRow ? setRows([firstRow, ...oldRows]) : setRows(oldRows);
   };
 
   return (
