@@ -35,7 +35,7 @@ const getETA = (
   vaccinated2: string,
   population: string
 ) => {
-  if (!vaccinated1 || !vaccinated2 || !population)
+  if (!parseInt(vaccinated1) || !parseInt(vaccinated2) || !parseInt(population))
     return {
       text: "-",
       days: 0,
@@ -68,6 +68,9 @@ const getETA = (
   else if (years > 0) text = `${years} ${years > 1 ? "years" : "year"}`;
   else if (months > 0) text = `${months} ${months > 1 ? "months" : "month"}`;
   else if (days > 0) text = `${days} ${days > 1 ? "days" : "day"}`;
+
+  if (text === "a few seconds ago")
+    console.log(text, targetDate.format("DD-MM-YYYY"), population);
 
   return { text, days: Math.round((parseInt(population) * 2) / perDay) };
 };

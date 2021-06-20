@@ -22,3 +22,4 @@ As a developer, this is why I am proud of this project.
 - Made using TypeScript and React
 - Styled-Components for CSS
 - CSS Grid for table
+- Moment.js for date manipulation
