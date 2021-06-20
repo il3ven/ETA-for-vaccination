@@ -8,6 +8,7 @@ import { Loading } from "./components/Loading";
 import { convertToIndiaUnit } from "./utils/convertToIndianUnit";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import { Footer } from "./components/Footer";
 import {
   TableWrapper,
   H1,
@@ -275,6 +276,8 @@ function App() {
           />
         </TableWrapper>
       )}
+
+      <Footer />
     </div>
   );
 }

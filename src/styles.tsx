@@ -45,7 +45,7 @@ export const Legend = styled.div`
   .text {
     font-size: 9pt;
     max-width: 12rem;
-    color: grey;
+    color: #808080;
   }
 `;
 
