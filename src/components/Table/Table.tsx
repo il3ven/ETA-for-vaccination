@@ -10,7 +10,7 @@ const Table = ({
   allowClick,
 }: {
   heading: IRow;
-  rows: Array<IRow>;
+  rows: IRow[];
   handleSort: (heading: string, sort: ISort) => void;
   allowClick: Boolean;
 }) => {
@@ -25,11 +25,11 @@ const Table = ({
       <Row row={heading} header handleSort={handleSort} />
       {rows.map((row, index) =>
         index === 0 ? (
-          <Row row={row} key={index} />
+          <Row row={row} key={row[0].value} />
         ) : (
           <Row
             row={row}
-            key={index}
+            key={row[0].value}
             {...(allowClick && {
               onClick: handleClick,
             })}
