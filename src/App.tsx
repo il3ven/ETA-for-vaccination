@@ -99,10 +99,9 @@ function App() {
   const [rawData, setRawData] = useState<any>();
   const [resp, setResp] = useState();
   const [rows, setRows] = useState<IRow[]>([[]]);
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<Boolean>(true);
   const [target, setTarget] = useState<string>("2022-06-01"); // Date string in YYYY-MM-DD
   let { code } = useParams<{ code: string }>();
-  console.log(code);
 
   const getRow = useCallback(
     (resp: any = {}, code: string): IRow => {

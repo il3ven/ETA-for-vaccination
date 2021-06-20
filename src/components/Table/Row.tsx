@@ -28,8 +28,6 @@ const Row = ({
     }
   };
 
-  console.log(!!onClick);
-
   return (
     <StyledRow
       header={header}
