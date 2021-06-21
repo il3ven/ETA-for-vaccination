@@ -211,6 +211,7 @@ function App() {
   };
 
   const handleSort = (heading: string, sort: ISort) => {
+    console.log(heading);
     let index = -1;
 
     for (let i = 0; i < headings.length; i++) {
@@ -234,16 +235,17 @@ function App() {
       const value2 = row2[index].value;
 
       if (parseInt(value1) && parseInt(value2)) {
-        /*prettier-ignore */
-        return sort === "asc"
-          ? parseInt(value1) > parseInt(value2) ? 1 : 0
-          : parseInt(value2) > parseInt(value1) ? 1 : 0;
+        const ret =
+          sort === "asc"
+            ? parseInt(value1) - parseInt(value2)
+            : parseInt(value2) - parseInt(value1);
+        return ret;
       }
 
-      /*prettier-ignore */
-      return sort === "asc"
-        ? (row1[index].value > row2[index].value ? 1 : 0)
-        : (row2[index].value > row1[index].value ? 1 : 0)
+      let ret = 0;
+      if (value1 > value2) ret = 1;
+      else if (value1 < value2) ret = -1;
+      return sort === "asc" ? ret : ret * -1;
     });
 
     firstRow ? setRows([firstRow, ...oldRows]) : setRows(oldRows);
