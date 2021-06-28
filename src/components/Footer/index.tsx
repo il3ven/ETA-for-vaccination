@@ -18,6 +18,7 @@ export const Footer = () => {
         <A href="mailto:8e023sxup@relay.firefox.com" target="_blank">
           Email us
         </A>
+        <img src="https://email.codedump.xyz/goto/41" alt=''/>
       </Section>
     </StyledFooter>
   );
