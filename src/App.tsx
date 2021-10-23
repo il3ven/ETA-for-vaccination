@@ -170,7 +170,7 @@ function App() {
 
       const resp = (
         await axios.get(
-          "https://raw.githubusercontent.com/covid19india/api/gh-pages/v4/min/data.min.json"
+          "https://data.covid19india.org/v4/min/data.min.json"
         )
       ).data;
 

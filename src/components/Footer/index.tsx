@@ -5,8 +5,8 @@ export const Footer = () => {
     <StyledFooter>
       <Section>
         <span>The data is provided by </span>
-        <A href="https://api.covid19india.org/" target="_blank">
-          https://api.covid19india.org/
+        <A href="https://data.covid19india.org/" target="_blank">
+          https://data.covid19india.org/
         </A>
       </Section>
       <Section>
